@@ -24,7 +24,7 @@ with open(filepath) as f:
 			prof = line[line.index('<td>')+4:line.index('</td>')]
 			i += 3
 			line = contents[i]
-			course = line[line.index('nk">')+4:line.index('</a>')]
+			course = line[line.index('nk">')+4:line.index('</a>')].replace('&amp;','&')
 			i += 1
 			line = contents[i]
 			quarter = line[line.index('<td>')+4:line.index('</td>',line.index('<td>'))] 
