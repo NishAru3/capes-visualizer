@@ -88,7 +88,6 @@ with open(filepath) as f:
 			courseList.append(hours)
 			courseList.append(expGrade)
 			courseList.append(givenGrade)
-
 			if(course[1:10] not in course_dict):
 				new_course = Course()
 				new_course.course = course
