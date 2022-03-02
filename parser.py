@@ -32,7 +32,7 @@ course_dict = {}
 
 
 # CAPES Parser
-filepath = 'allData.txt'
+filepath = 'cseData.txt'
 parsedList = []
 fields = ["Prof","Course","Quarter","Enrolled","Evals Made","Course Rec %","Prof Rec %", "Hours/Week", "Expected Grade", "Given Grade"]
 
@@ -91,7 +91,7 @@ with open(filepath) as f:
 
 			if(courseCode not in course_dict):
 				new_course = Course()
-				new_course.courseCode = courseCode;
+				new_course.courseCode = courseCode
 				new_course.courseName.append(course)
 				new_course.professor.append(prof)
 				new_course.enrolled.append(enrolled)
@@ -133,21 +133,26 @@ with open(filepath) as f:
 arr = []
 arrFields = ['Course Code', 'Professor', 'Enrolled Count', 'Course Rec %', 'Prof Rec %', 'Hours/Week', 'Grade']
 for i in course_dict:
-	for j in course_dict[i].professor:
-		print(j)
-		arrY = []
-		ind = course_dict[i].professor.index(j)
-		if (ind ==  0):
-			arrY.append(course_dict[i].courseCode)
-		else:
-			arrY.append("")
-		arrY.append(j)
-		arrY.append(course_dict[i].enrolled[ind])
-		arrY.append(course_dict[i].course_rec_percent[ind])
-		arrY.append(course_dict[i].prof_rec_percent[ind])
-		arrY.append(course_dict[i].studying[ind])
-		arrY.append(course_dict[i].given_grade[ind])
-		arr.append(arrY)
+	print(course_dict[i].courseCode)
+	print(course_dict[i].get_data_string())
+
+
+# for i in course_dict:
+# 	for j in course_dict[i].professor:
+# 		print(j)
+# 		arrY = []
+# 		ind = course_dict[i].professor.index(j)
+# 		if (ind ==  0):
+# 			arrY.append(course_dict[i].courseCode)
+# 		else:
+# 			arrY.append("")
+# 		arrY.append(j)
+# 		arrY.append(course_dict[i].enrolled[ind])
+# 		arrY.append(course_dict[i].course_rec_percent[ind])
+# 		arrY.append(course_dict[i].prof_rec_percent[ind])
+# 		arrY.append(course_dict[i].studying[ind])
+# 		arrY.append(course_dict[i].given_grade[ind])
+# 		arr.append(arrY)
 	
 
 
@@ -156,7 +161,7 @@ for i in course_dict:
 
 with open('newCSV.csv', 'w') as f:
 	write = csv.writer(f)
-	write.writerow(arrFields)
+	write.writerow(parsedList)
 	write.writerows(arr)
 
 
