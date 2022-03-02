@@ -4,7 +4,7 @@ import csv
 # Dictionary Course Object
 class Course(object):
 	courseCode = ""
-	course = []
+	courseName = []
 	professor = []
 	enrolled = []
 	course_rec_percent = []
@@ -23,7 +23,7 @@ class Course(object):
 	def get_data_string(self):
 		data_str = ""
 		for i in range(0, len(self.professor)):
-			data_str = data_str + self.course[i] + self.professor[i] + " " + self.enrolled[i] + " " + self.course_rec_percent[i] + " " + self.prof_rec_percent[i] + " " + self.studying[i] + " " + self.given_grade[i] + "\n"
+			data_str = data_str + self.courseName[i] + self.professor[i] + " " + self.enrolled[i] + " " + self.course_rec_percent[i] + " " + self.prof_rec_percent[i] + " " + self.studying[i] + " " + self.given_grade[i] + "\n"
 		return data_str
 
 # Dictionary Setup
@@ -44,7 +44,7 @@ with open(filepath) as f:
 	# prof,course,quarter,enrolled,evals made,rec class, rec prof,hrs/wk,grade exp, grade given
 	
 	i = 0
-	
+	y = 0
 	while (i<len(contents)):
 
 		if "<tr class" in contents[i]:
@@ -90,11 +90,15 @@ with open(filepath) as f:
 			courseList.append(givenGrade)
 
 			courseCode = course[0:course.index('-')].strip()
+			# print(courseCode)
 
 			if(courseCode not in course_dict):
+				# print(y)
+				# y += 1
 				new_course = Course()
-				new_course.courseCode = courseCode
-				new_course.course.append(course)
+				new_course.courseCode = courseCode;
+				new_course.courseName.append(course)
+				# print(new_course.courseName[0])
 				new_course.professor.append(prof)
 				new_course.enrolled.append(enrolled)
 				new_course.course_rec_percent.append(courseRec)
@@ -104,53 +108,58 @@ with open(filepath) as f:
 
 				course_dict[courseCode] = new_course
 			else:
+				# y += 1
 				old_course = course_dict[courseCode]
+				print(len(old_course.courseName))
+				print("----")
 				if(prof in old_course.professor):
 					prof_ind = old_course.professor.index(prof)
 					prof_ind += 1
-					old_course.course.insert(prof_ind, course)
+					old_course.courseName.insert(prof_ind, course)
 					old_course.professor.insert(prof_ind, prof)
 					old_course.enrolled.insert(prof_ind,enrolled)
 					old_course.course_rec_percent.insert(prof_ind,courseRec)
 					old_course.prof_rec_percent.insert(prof_ind,profRec)
 					old_course.studying.insert(prof_ind,hours)
 					old_course.given_grade.insert(prof_ind,givenGrade)
+					# y += 1
 				else:
-					old_course.course.append(course)
+					old_course.courseName.append(course)
 					old_course.professor.append(prof)
 					old_course.enrolled.append(enrolled)
 					old_course.course_rec_percent.append(courseRec)
 					old_course.prof_rec_percent.append(profRec)
 					old_course.studying.append(hours)
 					old_course.given_grade.append(givenGrade)
-
+					# y += 1
 			parsedList.append(courseList)
 
 		i += 1
 
 # Printing
-with open('fullyParsedCapes.csv', 'w') as f:
-	write = csv.writer(f)
-	write.writerow(fields)
-	write.writerows(parsedList)
+# with open('fullyParsedCapes.csv', 'w') as f:
+# 	write = csv.writer(f)
+# 	write.writerow(fields)
+# 	write.writerows(parsedList)
 
-arr = []
+# arr = []
 
-for i in course_dict:
-	arrY = []
-	arrY.append(i)
-	arr.append(arrY+course_dict[i].course)
+# for i in course_dict:
+# 	print(course_dict[i].get_data_string())
+# arr.sort()
+# for i in arr:
+# 	print(i)
 	# print(course_dict[i].course)
 	# print(course_dict[i].get_data_string())
 
-print(len(course_dict))
+# print(len(course_dict))
 
 
 
-with open('newCSV.csv', 'w') as f:
-	write = csv.writer(f)
-	write.writerow(["The Only Column","The other column"])
-	write.writerows(arr[0:100])
+# with open('newCSV.csv', 'w') as f:
+# 	write = csv.writer(f)
+# 	write.writerow(["The Only Column"])
+# 	write.writerows(arr)
 
 
 
