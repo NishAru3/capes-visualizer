@@ -88,7 +88,10 @@ with open(filepath) as f:
 			courseList.append(hours)
 			courseList.append(expGrade)
 			courseList.append(givenGrade)
-			if(course[1:10] not in course_dict):
+
+			courseCode = course[0:course.index('-')].strip()
+
+			if(courseCode not in course_dict):
 				new_course = Course()
 				new_course.course = course
 
@@ -99,9 +102,9 @@ with open(filepath) as f:
 				new_course.studying.append(hours)
 				new_course.given_grade.append(givenGrade)
 
-				course_dict[course[1:10]] = new_course
+				course_dict[courseCode] = new_course
 			else:
-				old_course = course_dict[course[1:10]]
+				old_course = course_dict[courseCode]
 				if(prof in old_course.professor):
 					prof_ind = old_course.professor.index(prof)
 					prof_ind += 1
@@ -123,7 +126,7 @@ with open(filepath) as f:
 
 		i += 1
 
-
+# Printing
 with open('fullyParsedCapes.csv', 'w') as f:
 	write = csv.writer(f)
 	write.writerow(fields)
