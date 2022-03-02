@@ -1,5 +1,8 @@
 import csv
 import xlsxwriter
+# import pandas as pd
+# from ethnicolr import pred_wiki_name
+
 
 # Dictionary Course Object
 class Course:
@@ -54,6 +57,7 @@ def quarterIsGreater(one, two):
 def gradeCompare(one, two):
 	return gOrder.index(one[:2])-gOrder.index(two[:2])
 
+names = []
 
 
 # CAPES Parser
@@ -111,6 +115,10 @@ with open(filepath) as f:
 			courseList.append(hours)
 			courseList.append(expGrade)
 			courseList.append(givenGrade)
+			firstN = prof[prof.index(',')+1:]
+			lastN = prof[:prof.index(',')]
+			if([firstN,lastN] not in names):
+				names.append([firstN,lastN])
 
 			courseCode = course[0:course.index('-')].strip()
 
@@ -133,11 +141,11 @@ with open(filepath) as f:
 					prof_ind = old_course.professor.index(prof)
 					 
 					# WI21,SP21,S121,S221,FA21 --> chronological
-					while(prof_ind<old_course.professor.index(prof)+old_course.professor.count(prof) and quarterIsGreater(old_course.quarter[prof_ind],quarter)<0):
-						prof_ind = prof_ind + 1
-					# Sort by grade
-					# while(prof_ind<old_course.professor.index(prof)+old_course.professor.count(prof) and gradeCompare(old_course.given_grade[prof_ind],givenGrade)<0):
+					# while(prof_ind<old_course.professor.index(prof)+old_course.professor.count(prof) and quarterIsGreater(old_course.quarter[prof_ind],quarter)<0):
 					# 	prof_ind = prof_ind + 1
+					# Sort by grade
+					while(prof_ind<old_course.professor.index(prof)+old_course.professor.count(prof) and gradeCompare(old_course.given_grade[prof_ind],givenGrade)<0):
+						prof_ind = prof_ind + 1
 					old_course.courseName.insert(prof_ind, course)
 					old_course.professor.insert(prof_ind, prof)
 					old_course.quarter.insert(prof_ind, quarter)
@@ -165,7 +173,12 @@ with open(filepath) as f:
 # 	write.writerows(parsedList)
 
 arr = []
-arrFields = ['Course Code', 'Professor', 'Quarter','Enrolled Count', 'Course Rec %', 'Prof Rec %', 'Hours/Week', 'Grade']
+arrFields = ['Course Code', 'Professor', 'Race', 'Quarter','Enrolled Count', 'Course Rec %', 'Prof Rec %', 'Hours/Week', 'Grade']
+
+df = pd.DataFrame(names, columns = ['first', 'last'])
+
+odf = pred_wiki_name(df, 'last', 'first')
+
 
 
 for i in course_dict:
@@ -177,6 +190,9 @@ for i in course_dict:
 		else:
 			arrY.append("")
 		arrY.append(j)
+		firstN = j[j.index(',')+1:]
+		lastN = j[:j.index(',')]
+		arrY.append(odf.at(names.index([firstN,lastN]),'race'))
 		arrY.append(course_dict[i].quarter[c])
 		arrY.append(course_dict[i].enrolled[c])
 		arrY.append(course_dict[i].course_rec_percent[c])
