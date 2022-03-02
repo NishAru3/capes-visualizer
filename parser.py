@@ -3,8 +3,8 @@ import csv
 
 # Dictionary Course Object
 class Course(object):
-	course = ""
-	
+	courseCode = ""
+	course = []
 	professor = []
 	enrolled = []
 	course_rec_percent = []
@@ -23,7 +23,7 @@ class Course(object):
 	def get_data_string(self):
 		data_str = ""
 		for i in range(0, len(self.professor)):
-			data_str = data_str + self.professor[i] + " " + self.enrolled[i] + " " + self.course_rec_percent[i] + " " + self.prof_rec_percent[i] + " " + self.studying[i] + " " + self.given_grade[i] + "\n"
+			data_str = data_str + self.course[i] + self.professor[i] + " " + self.enrolled[i] + " " + self.course_rec_percent[i] + " " + self.prof_rec_percent[i] + " " + self.studying[i] + " " + self.given_grade[i] + "\n"
 		return data_str
 
 # Dictionary Setup
@@ -93,8 +93,8 @@ with open(filepath) as f:
 
 			if(courseCode not in course_dict):
 				new_course = Course()
-				new_course.course = course
-
+				new_course.courseCode = courseCode;
+				new_course.course.append(course)
 				new_course.professor.append(prof)
 				new_course.enrolled.append(enrolled)
 				new_course.course_rec_percent.append(courseRec)
@@ -108,6 +108,7 @@ with open(filepath) as f:
 				if(prof in old_course.professor):
 					prof_ind = old_course.professor.index(prof)
 					prof_ind += 1
+					old_course.course.insert(prof_ind, course)
 					old_course.professor.insert(prof_ind, prof)
 					old_course.enrolled.insert(prof_ind,enrolled)
 					old_course.course_rec_percent.insert(prof_ind,courseRec)
@@ -115,6 +116,7 @@ with open(filepath) as f:
 					old_course.studying.insert(prof_ind,hours)
 					old_course.given_grade.insert(prof_ind,givenGrade)
 				else:
+					old_course.course.append(course)
 					old_course.professor.append(prof)
 					old_course.enrolled.append(enrolled)
 					old_course.course_rec_percent.append(courseRec)
@@ -136,7 +138,7 @@ arr = []
 
 for i in course_dict:
 	arrY = []
-	arrY.append(str(course_dict[i].course))
+	arrY.append(i)
 	arr.append(arrY)
 	# print(course_dict[i].course)
 	# print(course_dict[i].get_data_string())
@@ -147,8 +149,8 @@ print(len(course_dict))
 
 with open('newCSV.csv', 'w') as f:
 	write = csv.writer(f)
-	write.writerow(["The Only Column"])
-	write.writerows(arr)
+	write.writerow(["The Only Column","The other column"])
+	write.writerows(arr[0:100])
 
 
 
