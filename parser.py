@@ -93,7 +93,7 @@ with open(filepath) as f:
 
 			if(courseCode not in course_dict):
 				new_course = Course()
-				new_course.courseCode = courseCode;
+				new_course.courseCode = courseCode
 				new_course.course.append(course)
 				new_course.professor.append(prof)
 				new_course.enrolled.append(enrolled)
@@ -139,7 +139,7 @@ arr = []
 for i in course_dict:
 	arrY = []
 	arrY.append(i)
-	arr.append(arrY)
+	arr.append(arrY+course_dict[i].course)
 	# print(course_dict[i].course)
 	# print(course_dict[i].get_data_string())
 
