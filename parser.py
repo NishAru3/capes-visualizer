@@ -62,9 +62,8 @@ names = []
 
 
 d = gender.Detector()
-print(d.get_gender(u"Bob"))
 # CAPES Parser
-filepath = 'cseData.txt'
+filepath = 'allData.txt'
 parsedList = []
 fields = ["Prof","Course","Quarter","Enrolled","Evals Made","Course Rec %","Prof Rec %", "Hours/Week", "Expected Grade", "Given Grade"]
 
@@ -108,9 +107,9 @@ with open(filepath) as f:
 			line = contents[i]
 			givenGrade = line[line.index('">')+2:line.index('</span>')].strip()
 			
-			prof_split = prof.split(" ")
-			print(prof_split[1])
-			print(d.get_gender(prof_split[1]))
+			# prof_split = prof.split(" ")
+			# print(prof_split[1])
+			# print(d.get_gender(prof_split[1]))
 			courseList.append(prof)
 			courseList.append(course)
 			courseList.append(quarter)
@@ -121,10 +120,10 @@ with open(filepath) as f:
 			courseList.append(hours)
 			courseList.append(expGrade)
 			courseList.append(givenGrade)
-			firstN = prof[prof.index(',')+1:]
-			lastN = prof[:prof.index(',')]
-			if([firstN,lastN] not in names):
-				names.append([firstN,lastN])
+			# firstN = prof[prof.index(',')+1:]
+			# lastN = prof[:prof.index(',')]
+			# if([firstN,lastN] not in names):
+			# 	names.append([firstN,lastN])
 
 			courseCode = course[0:course.index('-')].strip()
 
@@ -179,17 +178,88 @@ with open(filepath) as f:
 # 	write.writerows(parsedList)
 
 arr = []
-arrFields = ['Course Code', 'Professor', 'Race', 'Quarter','Enrolled Count', 'Course Rec %', 'Prof Rec %', 'Hours/Week', 'Grade']
+arrFields = ['Course Code', 'Professor', 'Gender', 'Quarter','Enrolled Count', 'Course Rec %', 'Prof Rec %', 'Hours/Week', 'Grade']
 
 df = pd.DataFrame(names, columns = ['first', 'last'])
 # 
 # odf = pred_wiki_name(df, 'last', 'first')
 
 
+genderCalc = {
+	'male': {
+		'A+': 0,
+		'A ': 0,
+		'A-': 0,
+		'B+': 0,
+		'B ': 0,
+		'B-': 0,
+		'C+': 0,
+		'C ': 0,
+		'C-': 0,
+		'D+': 0,
+		'D ': 0,
+		'D-': 0,
+		'N/': 0,
+		'sum': 0
+	},
+	'female': {
+		'A+': 0,
+		'A ': 0,
+		'A-': 0,
+		'B+': 0,
+		'B ': 0,
+		'B-': 0,
+		'C+': 0,
+		'C ': 0,
+		'C-': 0,
+		'D+': 0,
+		'D ': 0,
+		'D-': 0,
+		'N/': 0,
+		'sum': 0
+	}
+}
 
+departmentDict = {}
 
 for i in course_dict:
 	c = 0
+	dep = course_dict[i].courseCode.split(" ")[0]
+	if(dep not in departmentDict):
+		departmentDict[dep] = {
+			'male': {
+				'A+': 0,
+				'A ': 0,
+				'A-': 0,
+				'B+': 0,
+				'B ': 0,
+				'B-': 0,
+				'C+': 0,
+				'C ': 0,
+				'C-': 0,
+				'D+': 0,
+				'D ': 0,
+				'D-': 0,
+				'N/': 0,
+				'sum': 0
+			},
+			'female': {
+				'A+': 0,
+				'A ': 0,
+				'A-': 0,
+				'B+': 0,
+				'B ': 0,
+				'B-': 0,
+				'C+': 0,
+				'C ': 0,
+				'C-': 0,
+				'D+': 0,
+				'D ': 0,
+				'D-': 0,
+				'N/': 0,
+				'sum': 0
+			}
+		}
 	for j in course_dict[i].professor:
 		arrY = []
 		if (c ==  0):
@@ -197,8 +267,24 @@ for i in course_dict:
 		else:
 			arrY.append("")
 		arrY.append(j)
-		firstN = j[j.index(',')+1:]
-		lastN = j[:j.index(',')]
+		prof_split = j.split(" ")
+		profIndex = len(prof_split)
+		if (profIndex == 1):
+			profIndex = 0
+		else:
+			profIndex = 1
+		gender = d.get_gender(prof_split[profIndex])
+		arrY.append(gender)
+
+		if ('female' in gender):
+			departmentDict[dep]['female'][course_dict[i].given_grade[c][:2]] += 1
+			departmentDict[dep]['female']['sum'] += 1
+		elif('male' in gender):
+			departmentDict[dep]['male'][course_dict[i].given_grade[c][:2]] += 1
+			departmentDict[dep]['male']['sum'] += 1
+
+		# firstN = j[j.index(',')+1:]
+		# lastN = j[:j.index(',')]
 		# arrY.append(odf.at(names.index([firstN,lastN]),'race'))
 		arrY.append(course_dict[i].quarter[c])
 		arrY.append(course_dict[i].enrolled[c])
@@ -208,6 +294,46 @@ for i in course_dict:
 		arrY.append(course_dict[i].given_grade[c])
 		arr.append(arrY)
 		c += 1
+	if(departmentDict[dep]['male']['sum'] == 0):
+		departmentDict[dep]['male']['sum'] = 1
+
+	if(departmentDict[dep]['female']['sum'] == 0):
+		departmentDict[dep]['female']['sum'] = 1 
+		
+
+# print(genderCalc)
+
+# for dep in departmentDict:
+# 	if(departmentDict[dep]['male']['sum'] == 0 or departmentDict[dep]['female']['sum'] == 0):
+# 		print(dep)
+# 		print(departmentDict[dep]['male']['sum'])
+# 		print(departmentDict[dep]['female']['sum'])
+
+for dep in departmentDict:
+	counter = 0
+	weightSumMale = 0
+	weightSumFemale = 0
+	for i in departmentDict[dep]['male']:
+		if counter < 12:
+			weightSumMale += int(counter*departmentDict[dep]['male'][i])
+		print(i,departmentDict[dep]['male'][i])
+		counter += 1
+
+	counter = 0
+	for i in departmentDict[dep]['female']:
+		if counter < 12:
+			weightSumFemale += int(counter*departmentDict[dep]['female'][i])
+		print(i,departmentDict[dep]['female'][i])
+		counter += 1
+
+
+	print(departmentDict[dep]['male']['sum'])
+	print(departmentDict[dep]['female']['sum'])
+	aveMale = weightSumMale/departmentDict[dep]['male']['sum']
+	aveFemale = weightSumFemale/departmentDict[dep]['female']['sum']
+	print(dep)
+	print('male: ',gOrder[int(aveMale)])
+	print('female: ',gOrder[int(aveFemale)])
 
 
 # with open('formattedParsed.csv', 'w') as f:
@@ -306,7 +432,7 @@ for eachClass in arr:
 	perProf = eachClass[1]
 
 	for eachItem in eachClass:
-		if(col == 7):
+		if(col == 8):
 			worksheet.write(row, col, eachItem, gradientDict[eachItem[:2]])
 		else:
 			worksheet.write(row, col, eachItem, colArr[colorIter1][colorIter2])
