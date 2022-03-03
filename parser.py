@@ -258,6 +258,22 @@ for i in course_dict:
 				'D-': 0,
 				'N/': 0,
 				'sum': 0
+			},
+			'unknown': {
+				'A+': 0,
+				'A ': 0,
+				'A-': 0,
+				'B+': 0,
+				'B ': 0,
+				'B-': 0,
+				'C+': 0,
+				'C ': 0,
+				'C-': 0,
+				'D+': 0,
+				'D ': 0,
+				'D-': 0,
+				'N/': 0,
+				'sum': 0
 			}
 		}
 	for j in course_dict[i].professor:
@@ -282,7 +298,9 @@ for i in course_dict:
 		elif('male' in gender):
 			departmentDict[dep]['male'][course_dict[i].given_grade[c][:2]] += 1
 			departmentDict[dep]['male']['sum'] += 1
-
+		else:
+			departmentDict[dep]['unknown'][course_dict[i].given_grade[c][:2]] += 1
+			departmentDict[dep]['unknown']['sum'] += 1
 		# firstN = j[j.index(',')+1:]
 		# lastN = j[:j.index(',')]
 		# arrY.append(odf.at(names.index([firstN,lastN]),'race'))
@@ -294,11 +312,14 @@ for i in course_dict:
 		arrY.append(course_dict[i].given_grade[c])
 		arr.append(arrY)
 		c += 1
-	if(departmentDict[dep]['male']['sum'] == 0):
-		departmentDict[dep]['male']['sum'] = 1
+	# if(departmentDict[dep]['male']['sum'] == 0):
+	# 	departmentDict[dep]['male']['sum'] = 1
 
-	if(departmentDict[dep]['female']['sum'] == 0):
-		departmentDict[dep]['female']['sum'] = 1 
+	# if(departmentDict[dep]['female']['sum'] == 0):
+	# 	departmentDict[dep]['female']['sum'] = 1 
+
+	# if(departmentDict[dep]['unknown']['sum'] == 0):
+	# 	departmentDict[dep]['unknown']['sum'] = 1 
 		
 
 # print(genderCalc)
@@ -313,27 +334,55 @@ for dep in departmentDict:
 	counter = 0
 	weightSumMale = 0
 	weightSumFemale = 0
+	weightSumUnknown = 0
 	for i in departmentDict[dep]['male']:
 		if counter < 12:
 			weightSumMale += int(counter*departmentDict[dep]['male'][i])
-		print(i,departmentDict[dep]['male'][i])
+		# print(i,departmentDict[dep]['male'][i])
 		counter += 1
 
 	counter = 0
 	for i in departmentDict[dep]['female']:
 		if counter < 12:
 			weightSumFemale += int(counter*departmentDict[dep]['female'][i])
-		print(i,departmentDict[dep]['female'][i])
+		# print(i,departmentDict[dep]['female'][i])
+		counter += 1
+
+	counter = 0
+	for i in departmentDict[dep]['unknown']:
+		if counter < 12:
+			weightSumUnknown += int(counter*departmentDict[dep]['unknown'][i])
+		# print(i,departmentDict[dep]['unknown'][i])
 		counter += 1
 
 
-	print(departmentDict[dep]['male']['sum'])
-	print(departmentDict[dep]['female']['sum'])
-	aveMale = weightSumMale/departmentDict[dep]['male']['sum']
-	aveFemale = weightSumFemale/departmentDict[dep]['female']['sum']
+	# print(departmentDict[dep]['male']['sum'])
+	# print(departmentDict[dep]['female']['sum'])
+	# print(departmentDict[dep]['unknown']['sum'])
+	aveMale = 0
+	aveFemale = 0
+	aveUnknown = 0
 	print(dep)
-	print('male: ',gOrder[int(aveMale)])
-	print('female: ',gOrder[int(aveFemale)])
+	totAve = 0
+	if(departmentDict[dep]['male']['sum'] != 0):
+		aveMale = weightSumMale/departmentDict[dep]['male']['sum']
+		print('male: ',gOrder[int(aveMale)])
+		totAve += 1
+	if(departmentDict[dep]['female']['sum'] != 0):
+		aveFemale = weightSumFemale/departmentDict[dep]['female']['sum']
+		print('female: ',gOrder[int(aveFemale)])
+		totAve += 1
+	if(departmentDict[dep]['unknown']['sum'] != 0):
+		aveUnknown = weightSumUnknown/departmentDict[dep]['unknown']['sum']
+		print('unknown: ',gOrder[int(aveUnknown)])
+		totAve += 1
+
+
+	aveOverall = (aveMale + aveFemale + aveUnknown)/totAve
+
+	print('overall: ',gOrder[int(aveOverall)])
+	
+	
 
 
 # with open('formattedParsed.csv', 'w') as f:
