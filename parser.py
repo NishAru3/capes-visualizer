@@ -1,7 +1,8 @@
 import csv
 import xlsxwriter
-# import pandas as pd
+import pandas as pd
 # from ethnicolr import pred_wiki_name
+import gender_guesser.detector as gender
 
 
 # Dictionary Course Object
@@ -60,6 +61,8 @@ def gradeCompare(one, two):
 names = []
 
 
+d = gender.Detector()
+print(d.get_gender(u"Bob"))
 # CAPES Parser
 filepath = 'cseData.txt'
 parsedList = []
@@ -105,6 +108,9 @@ with open(filepath) as f:
 			line = contents[i]
 			givenGrade = line[line.index('">')+2:line.index('</span>')].strip()
 			
+			prof_split = prof.split(" ")
+			print(prof_split[1])
+			print(d.get_gender(prof_split[1]))
 			courseList.append(prof)
 			courseList.append(course)
 			courseList.append(quarter)
@@ -176,8 +182,9 @@ arr = []
 arrFields = ['Course Code', 'Professor', 'Race', 'Quarter','Enrolled Count', 'Course Rec %', 'Prof Rec %', 'Hours/Week', 'Grade']
 
 df = pd.DataFrame(names, columns = ['first', 'last'])
+# 
+# odf = pred_wiki_name(df, 'last', 'first')
 
-odf = pred_wiki_name(df, 'last', 'first')
 
 
 
@@ -192,7 +199,7 @@ for i in course_dict:
 		arrY.append(j)
 		firstN = j[j.index(',')+1:]
 		lastN = j[:j.index(',')]
-		arrY.append(odf.at(names.index([firstN,lastN]),'race'))
+		# arrY.append(odf.at(names.index([firstN,lastN]),'race'))
 		arrY.append(course_dict[i].quarter[c])
 		arrY.append(course_dict[i].enrolled[c])
 		arrY.append(course_dict[i].course_rec_percent[c])
