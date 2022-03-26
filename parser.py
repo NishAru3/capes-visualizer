@@ -221,10 +221,12 @@ genderCalc = {
 }
 
 departmentDict = {}
+department_prof_ref = {}
 
 for i in course_dict:
 	c = 0
 	dep = course_dict[i].courseCode.split(" ")[0]
+	dep = ''.join([i for i in dep if not i.isdigit()])
 	if(dep not in departmentDict):
 		departmentDict[dep] = {
 			'male': {
@@ -275,8 +277,25 @@ for i in course_dict:
 				'N/': 0,
 				'sum': 0
 			}
+
 		}
-	for j in course_dict[i].professor:
+		department_prof_ref[dep] = {
+			'male': {
+				'total_sum': 0.0,
+				'total_rec': 0.0
+			},
+			'female': {
+				'total_sum': 0.0,
+				'total_rec': 0.0
+			},
+			'unknown': {
+				'total_sum': 0.0,
+				'total_rec': 0.0
+			}
+		}
+	
+	for index_val in range(0,course_dict[i].professor):
+		j = course_dict[i].professor[index_val]
 		arrY = []
 		if (c ==  0):
 			arrY.append(course_dict[i].courseCode)
@@ -295,12 +314,18 @@ for i in course_dict:
 		if ('female' in gender):
 			departmentDict[dep]['female'][course_dict[i].given_grade[c][:2]] += 1
 			departmentDict[dep]['female']['sum'] += 1
+			department_prof_ref[dep]['female']['total_sum'] += 1
+			department_prof_ref[dep]['female']['total_rec'] += float(course_dict[i].prof_rec_percent[c][:-1])
 		elif('male' in gender):
 			departmentDict[dep]['male'][course_dict[i].given_grade[c][:2]] += 1
 			departmentDict[dep]['male']['sum'] += 1
+			department_prof_ref[dep]['male']['total_sum'] += 1
+			department_prof_ref[dep]['male']['total_rec'] += float(course_dict[i].prof_rec_percent[c][:-1])
 		else:
 			departmentDict[dep]['unknown'][course_dict[i].given_grade[c][:2]] += 1
 			departmentDict[dep]['unknown']['sum'] += 1
+			department_prof_ref[dep]['unknown']['total_sum'] += 1
+			department_prof_ref[dep]['unknown']['total_rec'] += float(course_dict[i].prof_rec_percent[c][:-1])
 		# firstN = j[j.index(',')+1:]
 		# lastN = j[:j.index(',')]
 		# arrY.append(odf.at(names.index([firstN,lastN]),'race'))
@@ -374,6 +399,20 @@ for dep in departmentDict:
 		totAve += 1
 	if(departmentDict[dep]['unknown']['sum'] != 0):
 		aveUnknown = weightSumUnknown/departmentDict[dep]['unknown']['sum']
+		print('unknown: ',gOrder[int(aveUnknown)])
+		totAve += 1
+
+	print("Professor Reccomendation Percentages: ")
+	if(department_prof_ref[dep]['male']['total_sum'] != 0):
+		aveMale = department_prof_ref[dep]['male']['total_rec']/department_prof_ref[dep]['male']['total_sum']
+		print('male: ',gOrder[int(aveMale)])
+		totAve += 1
+	if(department_prof_ref[dep]['female']['total_sum'] != 0):
+		aveFemale = department_prof_ref[dep]['female']['total_rec']/department_prof_ref[dep]['female']['total_sum']
+		print('female: ',gOrder[int(aveFemale)])
+		totAve += 1
+	if(department_prof_ref[dep]['unknown']['total_sum'] != 0):
+		aveUnknown = department_prof_ref[dep]['unknown']['total_rec']/department_prof_ref[dep]['unknown']['total_sum']
 		print('unknown: ',gOrder[int(aveUnknown)])
 		totAve += 1
 
